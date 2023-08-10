@@ -1,28 +1,30 @@
 import ROOT
 from ROOT import *
 
-file1 = ROOT.TFile("ht.root")
+PATH = "/afs/cern.ch/user/l/lvicenik/alice/"
+
+file1 = ROOT.TFile(PATH + "ht.root")
 ht_de = file1.Get("ht")
 ht_de.Scale(1. / ht_de.Integral())
 
-file2 = ROOT.TFile("htnon.root")
+file2 = ROOT.TFile(PATH + "htnon.root")
 htnon_de = file2.Get("htnon")
 htnon_de.Scale(1. / htnon_de.Integral())
 
-ht_data_file_bg = ROOT.TFile("ht_data_cut.root")
+ht_data_file_bg = ROOT.TFile(PATH + "ht_data_cut.root")
 ht_data_bg = ht_data_file_bg.Get("ht")
 ht_data_bg.Scale(1. / ht_data_bg.Integral())
 
 
-file3 = ROOT.TFile("hm.root")
+file3 = ROOT.TFile(PATH + "hm.root")
 hm_de = file3.Get("hm")
 hm_de.Scale(1. / hm_de.Integral())
 
-file4 = ROOT.TFile("hmnon.root")
+file4 = ROOT.TFile(PATH + "hmnon.root")
 hmnon_de = file4.Get("hmnon")
 hmnon_de.Scale(1. / hmnon_de.Integral())
 
-hm_data_file_bg = ROOT.TFile("hm_data_bg.root")
+hm_data_file_bg = ROOT.TFile(PATH + "hm_data_bg.root")
 hm_data_bg = hm_data_file_bg.Get("hm")
 hm_data_bg.Scale(1. / hm_data_bg.Integral())
 
