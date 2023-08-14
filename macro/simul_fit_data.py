@@ -31,8 +31,7 @@ ht_data = data_file.Get("ht")
 
 
 mass = ROOT.RooRealVar("Dimuon mass", "Dimuon Invariant mass", 2, 5)
-tau = ROOT.RooRealVar("Dimuon tauz", "Dimuon pseudoproper decay length", -0.01, 0.01)
-
+tauz = ROOT.RooRealVar("Dimuon tauz", "Dimuon pseudoproper decay length", -0.003, 0.003)
 
 mass.setRange("full", 2, 5)
 mass.setRange("left", 2, 2.9)
@@ -42,18 +41,18 @@ mass.setRange("right", 3.2, 5)
 
 datahist_m = ROOT.RooDataHist("datahistm", "DataHist m", ROOT.RooArgList(mass), hm_de)
 datahist_m_non = ROOT.RooDataHist("datahistm_non", "DataHist m non", ROOT.RooArgList(mass), hmnon_de)
-datahist_t = ROOT.RooDataHist("datahistt", "DataHist t", ROOT.RooArgList(tau), ht_de)
-datahist_t_non = ROOT.RooDataHist("datahistt_non", "DataHist t non", ROOT.RooArgList(tau), htnon_de)
-datahist_t_bg = ROOT.RooDataHist("datahistt_bg", "DataHist t bg", ROOT.RooArgList(tau), ht_data_bg)
+datahist_t = ROOT.RooDataHist("datahistt", "DataHist t", ROOT.RooArgList(tauz), ht_de)
+datahist_t_non = ROOT.RooDataHist("datahistt_non", "DataHist t non", ROOT.RooArgList(tauz), htnon_de)
+datahist_t_bg = ROOT.RooDataHist("datahistt_bg", "DataHist t bg", ROOT.RooArgList(tauz), ht_data_bg)
 
 mass_pdf = ROOT.RooHistPdf("mass_pdf", "mass pdf", ROOT.RooArgList(mass), datahist_m)
 mass_n_pdf = ROOT.RooHistPdf("mass_n_pdf", "mass n pdf", ROOT.RooArgList(mass), datahist_m_non)
-tauz_pdf = ROOT.RooHistPdf("tauz_pdf", "tauz n pdf", ROOT.RooArgList(tau), datahist_t)
-tauz_n_pdf = ROOT.RooHistPdf("tauz_n_pdf", "tauz n pdf", ROOT.RooArgList(tau), datahist_t_non)
-tauz_bg_pdf = ROOT.RooHistPdf("tauz_bg_pdf", "tauz bg pdf", ROOT.RooArgList(tau), datahist_t_bg)
+tauz_pdf = ROOT.RooHistPdf("tauz_pdf", "tauz n pdf", ROOT.RooArgList(tauz), datahist_t)
+tauz_n_pdf = ROOT.RooHistPdf("tauz_n_pdf", "tauz n pdf", ROOT.RooArgList(tauz), datahist_t_non)
+tauz_bg_pdf = ROOT.RooHistPdf("tauz_bg_pdf", "tauz bg pdf", ROOT.RooArgList(tauz), datahist_t_bg)
 
 datahist_data_m = ROOT.RooDataHist("datahistdatam", "DataHist data m", ROOT.RooArgList(mass), hm_data)
-datahist_data_t = ROOT.RooDataHist("datahistdatat", "DataHist data t", ROOT.RooArgList(tau), ht_data)
+datahist_data_t = ROOT.RooDataHist("datahistdatat", "DataHist data t", ROOT.RooArgList(tauz), ht_data)
 
 
 #mass crystal ball, chebyshev polynomials pt = 0-2
@@ -94,8 +93,8 @@ datahist_data_t = ROOT.RooDataHist("datahistdatat", "DataHist data t", ROOT.RooA
 #----------------------------------------------------------------------------------------------------
 mean = ROOT.RooRealVar("mean", "Mean", 3.0, 0, 10)
 sigma = ROOT.RooRealVar("sigma", "Sigma", 0.07, 0, 10)
-alpha = ROOT.RooRealVar("alpha", "Alpha", 1.2, -5, 10)
-n = ROOT.RooRealVar("n", "n", 1, -1, 10)
+alpha = ROOT.RooRealVar("alpha", "Alpha", 1, -10, 10)
+n = ROOT.RooRealVar("n", "n", 1, -5, 10)
 cb_pdf = ROOT.RooCBShape("cb_pdf", "Crystal Ball PDF", mass, mean, sigma, alpha, n)
 
 cheb_coeffs = [ROOT.RooRealVar(f"cheb_coeff_{i}", f"Coeff_{i}", 0.01, -2, 2) for i in range(6)]
@@ -140,7 +139,7 @@ model_m_all.fitTo(datahist_data_m)
 #----------------------------------------------------------------------------------------------------
 
 data_m = ROOT.RooDataSet("data_m", "Data Set m", ROOT.RooArgSet(mass),  ROOT.RooFit.Import(datahist_data_m))
-data_t = ROOT.RooDataSet("data_t", "Data Set t", ROOT.RooArgSet(tau),  ROOT.RooFit.Import(datahist_data_t))
+data_t = ROOT.RooDataSet("data_t", "Data Set t", ROOT.RooArgSet(tauz),  ROOT.RooFit.Import(datahist_data_t))
 
 
 event_num = 100000
@@ -167,9 +166,9 @@ TotalnJPsiNon = ROOT.RooFormulaVar("nonprompFrac", "@0*@1", ROOT.RooArgList(nJPs
 
 # fit with the histogram pdfs
 #------------------------------------------------------------
-# model_t_all = ROOT.RooAddPdf("model_t_all", "tauz_n_pdf + tauz_pdf + bg_pdf", 
-#     ROOT.RooArgList(tauz_n_pdf, tauz_pdf, tauz_bg_pdf), 
-#     ROOT.RooArgList(TotalnJPsiNon, TotalnJPsi, nBkgVar))
+model_t_all = ROOT.RooAddPdf("model_t_all", "tauz_n_pdf + tauz_pdf + bg_pdf", 
+    ROOT.RooArgList(tauz_n_pdf, tauz_pdf, tauz_bg_pdf), 
+    ROOT.RooArgList(TotalnJPsiNon, TotalnJPsi, nBkgVar))
 #------------------------------------------------------------
 
 # fit with functions
@@ -177,24 +176,23 @@ TotalnJPsiNon = ROOT.RooFormulaVar("nonprompFrac", "@0*@1", ROOT.RooArgList(nJPs
 workspace_file_nonprompt = ROOT.TFile(PATH_WORKSPACE + "tauz_nonprompt_landau_cheb_fit_workspace.root", "READ")
 workspace_nonprompt = workspace_file_nonprompt.Get("tauz_nonprompt_fit_workspace")
 model_t_nonprompt = workspace_nonprompt.pdf("model_nonprompt_pdf")
-
-# fl = ROOT.TFile("tempate_fit_test.root", "RECREATE")
-# model_t_nonprompt.Write()
-# fl.Close()
-
-# exit()
+#model_t_nonprompt.fitTo(datahist_t_non)
 
 workspace_file_prompt = ROOT.TFile(PATH_WORKSPACE + "tauz_prompt_bw_cheb_fit_workspace.root", "READ")
 workspace_prompt = workspace_file_prompt.Get("tauz_prompt_fit_workspace")
 model_t_prompt = workspace_prompt.pdf("model_prompt_pdf")
+#model_t_prompt.fitTo(datahist_t)
 
 workspace_file_background = ROOT.TFile(PATH_WORKSPACE + "tauz_background_bw_cheb_fit_workspace.root", "READ")
 workspace_background = workspace_file_background.Get("tauz_background_fit_workspace")
 model_t_background = workspace_background.pdf("model_background_pdf")
+#model_t_background.fitTo(datahist_t_bg)
 
-model_t_all = ROOT.RooAddPdf("model_t_all", "tauz_n_pdf + tauz_pdf + bg_pdf",
-    ROOT.RooArgList(tauz_n_pdf, tauz_pdf, tauz_bg_pdf),
-    ROOT.RooArgList(TotalnJPsiNon, TotalnJPsi, nBkgVar))
+# model_t_all = ROOT.RooAddPdf("model_t_all", "tauz_n_pdf + tauz_pdf + bg_pdf",
+#     ROOT.RooArgList(model_t_nonprompt, model_t_prompt, model_t_background),
+#     ROOT.RooArgList(TotalnJPsiNon, TotalnJPsi, nBkgVar))
+
+
 
 #------------------------------------------------------------
 
@@ -212,7 +210,7 @@ simfit.addPdf(model_t_all,"tauzCat")
 print(entry_num)
 
 combData = ROOT.RooDataSet("combData", "combined data",
-    {mass, tau}, 
+    {mass, tauz}, 
     Index=cat, 
     Import={"massCat": data_m, "tauzCat": data_t},
 )
@@ -239,15 +237,16 @@ simfit.plotOn(frame1, ROOT.RooFit.Name("mass_n_pdf"), Slice=(cat, "massCat"), Co
 #simfit.plotOn(frame1, ROOT.RooFit.Name("mass_bg_pdf"), Slice=(cat, "massCat"), Components="model_bg_m", ProjWData=(cat,combData), LineStyle="--", LineColor=ROOT.kGreen+2)
 
 
-frame2 = tau.frame(ROOT.RooFit.Title("Pseudo Proper Decay Length Fit Result"), )
+frame2 = tauz.frame(ROOT.RooFit.Title("Pseudo Proper Decay Length Fit Result"), )
 combData.plotOn(frame2, ROOT.RooFit.Cut("cat==cat::tauzCat"))
 #data_t.plotOn(frame2, ROOT.RooFit.LineColor(ROOT.kRed))
 simfit.plotOn(frame2, ROOT.RooFit.Name("tauz_all_pdf"), Slice=(cat, "tauzCat"), ProjWData=(cat,combData))
-simfit.plotOn(frame2, ROOT.RooFit.Name("tauz_pdf"), Slice=(cat, "tauzCat"), Components="tauz_pdf", ProjWData=(cat,combData), LineStyle="--", LineColor=ROOT.kRed+1)
-simfit.plotOn(frame2, ROOT.RooFit.Name("tauz_n_pdf"), Slice=(cat, "tauzCat"), Components="tauz_n_pdf", ProjWData=(cat,combData), LineStyle="--", LineColor=ROOT.kAzure+4)
-simfit.plotOn(frame2, ROOT.RooFit.Name("tauz_bg_pdf"), Slice=(cat, "tauzCat"), Components="tauz_bg_pdf", ProjWData=(cat,combData), LineStyle="--", LineColor=ROOT.kGreen+2)
-
-
+simfit.plotOn(frame2, ROOT.RooFit.Name("model_prompt_pdf"), Slice=(cat, "tauzCat"), Components="model_prompt_pdf", ProjWData=(cat,combData), LineStyle="--", LineColor=ROOT.kRed+1)
+simfit.plotOn(frame2, ROOT.RooFit.Name("model_nonprompt_pdf"), Slice=(cat, "tauzCat"), Components="model_nonprompt_pdf", ProjWData=(cat,combData), LineStyle="--", LineColor=ROOT.kAzure+4)
+simfit.plotOn(frame2, ROOT.RooFit.Name("model_background_pdf"), Slice=(cat, "tauzCat"), Components="model_background_pdf", ProjWData=(cat,combData), LineStyle="--", LineColor=ROOT.kGreen+2)
+model_t_prompt.plotOn(frame2, LineColor=ROOT.kRed+1)
+model_t_background.plotOn(frame2, LineColor=ROOT.kGreen+1)
+model_t_nonprompt.plotOn(frame2, LineColor=ROOT.kBlue+1)
 
 
 canvas = ROOT.TCanvas("canvas", "Fit Plot", 1280, 720)
@@ -267,9 +266,26 @@ canvas.cd(1)
 frame1.Draw()
 legend1.Draw()
 
-canvas.cd(2).SetLogy()
+canvas.cd(2)#.SetLogy()
 frame2.Draw()
 legend2.Draw()
 
 canvas.Update()
 canvas.SaveAs(PATH_IMGS + "simul_fit_data_4-6.png")
+
+
+
+# workspace_file_prompt = ROOT.TFile(PATH_WORKSPACE + "tauz_prompt_bw_cheb_fit_workspace.root", "READ")
+# workspace_prompt = workspace_file_prompt.Get("tauz_prompt_fit_workspace")
+# model_t_prompt = workspace_prompt.pdf("model_prompt_pdf")
+
+# f = tauz.frame(ROOT.RooFit.Title("Invariant mass background")) 
+# #datahist_data_t.plotOn(frame)
+# #model_t.plotOn(frame)
+# model_t_prompt.plotOn(f)
+
+# c = ROOT.TCanvas("canvas", "Exponential Fit Canvas", 800, 600)
+# f.Draw()
+# c.Draw()
+
+# c.SaveAs(PATH_IMGS + "tauz_template_prompt_fit_test.png")

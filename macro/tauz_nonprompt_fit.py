@@ -8,8 +8,9 @@ PATH_WORKSPACE = "/afs/cern.ch/user/l/lvicenik/private/summer_student_quarkonia_
 
 ht_data_cut_file = ROOT.TFile(PATH_DATA + "template_tune_45_4-6.root")
 ht_data = ht_data_cut_file.Get("htnon")
+ht_data.Scale(1. / ht_data.Integral())
 
-tauz = ROOT.RooRealVar("tauz", "tauz", -0.003, 0.003)
+tauz = ROOT.RooRealVar("Dimuon tauz", "Dimuon pseudoproper decay length", -0.003, 0.003)
 
 datahist_data_t = ROOT.RooDataHist("datahisttdatabg", "DataHist t data bg", ROOT.RooArgList(tauz), ht_data)
 
