@@ -47,8 +47,16 @@ void read_tree(){
 
     const int fIn_number = 3;
     int color_list[fIn_number] = {2, 4, 1};
-    string fIn_names[fIn_number] = {"AO2D_LHC21i3d2_CPA.root", "AO2D_LHC21i3g2_CPA.root", "data_new.root"};
-    string hist_names[fIn_number] = {"prompt_Jpsi", "non_prompt_jpsi", "data"};
+    string fIn_names[fIn_number] = {
+        "../data/AO2D_LHC21i3d2_CPA.root", 
+        "../data/AO2D_LHC21i3g2_CPA.root",
+        "/Users/lucamicheletti/cernbox/summer_student_quarkonia_run3/data/LHC22r/AO2D.root"
+    };
+    string hist_names[fIn_number] = {
+        "prompt_Jpsi", 
+        "non_prompt_jpsi",
+        "data"
+    };
 
     float fMass = 0;
     float fPt = 0;
@@ -76,9 +84,13 @@ void read_tree(){
     float fFwdDcaY2 = 0;
     uint32_t fMcDecision = -999;
 
-    TH1F *hist_mass[fIn_number];
-    TH1F *hist_mass_smeared[fIn_number];
-    TH1F *hist_tauz[fIn_number];
+    TH1F *hist_mass_ospm[fIn_number];
+    TH1F *hist_mass_lspp[fIn_number];
+    TH1F *hist_mass_lsmm[fIn_number];
+    TH1F *hist_mass_ospm_smeared[fIn_number];
+    TH1F *hist_tauz_ospm[fIn_number];
+    TH1F *hist_tauz_lspp[fIn_number];
+    TH1F *hist_tauz_lsmm[fIn_number];
     TH1F *hist_pt[fIn_number];
     TH1F *hist_eta[fIn_number];
     TH1F *hist_fwdDcaX1[fIn_number];
@@ -88,17 +100,33 @@ void read_tree(){
     TH1F *hist_cosPointingAngle[fIn_number];
 
     for (auto& fIn_name : fIn_names) {
-        hist_mass[fIn_counter] = new TH1F("hist_mass", "Dimuon mass; m (GeV/c^{2}); counts", 300, 2., 5.);
-        hist_mass[fIn_counter] -> SetLineColor(color_list[fIn_counter]);
-        hist_mass[fIn_counter] -> SetMarkerColor(color_list[fIn_counter]);
+        hist_mass_ospm[fIn_counter] = new TH1F("hist_mass_ospm", "Dimuon mass; m (GeV/c^{2}); counts", 300, 2., 5.);
+        hist_mass_ospm[fIn_counter] -> SetLineColor(color_list[fIn_counter]);
+        hist_mass_ospm[fIn_counter] -> SetMarkerColor(color_list[fIn_counter]);
 
-        hist_mass_smeared[fIn_counter] = new TH1F("hist_mass_smeared", "Dimuon mass; m (GeV/c^{2}); counts", 300, 2., 5.);
-        hist_mass_smeared[fIn_counter] -> SetLineColor(color_list[fIn_counter]);
-        hist_mass_smeared[fIn_counter] -> SetMarkerColor(color_list[fIn_counter]);
+        hist_mass_lspp[fIn_counter] = new TH1F("hist_mass_lspp", "Dimuon mass; m (GeV/c^{2}); counts", 300, 2., 5.);
+        hist_mass_lspp[fIn_counter] -> SetLineColor(color_list[fIn_counter]);
+        hist_mass_lspp[fIn_counter] -> SetMarkerColor(color_list[fIn_counter]);
+
+        hist_mass_lsmm[fIn_counter] = new TH1F("hist_mass_lsmm", "Dimuon mass; m (GeV/c^{2}); counts", 300, 2., 5.);
+        hist_mass_lsmm[fIn_counter] -> SetLineColor(color_list[fIn_counter]);
+        hist_mass_lsmm[fIn_counter] -> SetMarkerColor(color_list[fIn_counter]);
+
+        hist_mass_ospm_smeared[fIn_counter] = new TH1F("hist_mass_ospm_smeared", "Dimuon mass; m (GeV/c^{2}); counts", 300, 2., 5.);
+        hist_mass_ospm_smeared[fIn_counter] -> SetLineColor(color_list[fIn_counter]);
+        hist_mass_ospm_smeared[fIn_counter] -> SetMarkerColor(color_list[fIn_counter]);
         
-        hist_tauz[fIn_counter] = new TH1F("hist_tauz", "Dimuon tauz; #tau (ms); counts", 1000, -0.1, 0.1);
-        hist_tauz[fIn_counter] -> SetLineColor(color_list[fIn_counter]);
-        hist_tauz[fIn_counter] -> SetMarkerColor(color_list[fIn_counter]);
+        hist_tauz_ospm[fIn_counter] = new TH1F("hist_tauz_ospm", "Dimuon tauz; #tau (ms); counts", 1000, -0.1, 0.1);
+        hist_tauz_ospm[fIn_counter] -> SetLineColor(color_list[fIn_counter]);
+        hist_tauz_ospm[fIn_counter] -> SetMarkerColor(color_list[fIn_counter]);
+
+        hist_tauz_lspp[fIn_counter] = new TH1F("hist_tauz_lspp", "Dimuon tauz; #tau (ms); counts", 1000, -0.1, 0.1);
+        hist_tauz_lspp[fIn_counter] -> SetLineColor(color_list[fIn_counter]);
+        hist_tauz_lspp[fIn_counter] -> SetMarkerColor(color_list[fIn_counter]);
+
+        hist_tauz_lsmm[fIn_counter] = new TH1F("hist_tauz_lsmm", "Dimuon tauz; #tau (ms); counts", 1000, -0.1, 0.1);
+        hist_tauz_lsmm[fIn_counter] -> SetLineColor(color_list[fIn_counter]);
+        hist_tauz_lsmm[fIn_counter] -> SetMarkerColor(color_list[fIn_counter]);
 
         hist_pt[fIn_counter] = new TH1F("hist_pt", "Dimuon pt; pT (GeV/c); counts", 100, 0., 20);
         hist_pt[fIn_counter] -> SetLineColor(color_list[fIn_counter]);
@@ -128,7 +156,7 @@ void read_tree(){
         hist_cosPointingAngle[fIn_counter] -> SetLineColor(color_list[fIn_counter]);
         hist_cosPointingAngle[fIn_counter] -> SetMarkerColor(color_list[fIn_counter]);
 
-        TFile *fIn_tree = new TFile(Form("../data/%s", fIn_name.c_str()), "READ");
+        TFile *fIn_tree = new TFile(Form("%s", fIn_name.c_str()), "READ");
         TIter next(fIn_tree -> GetListOfKeys()); 
         TKey *key; 
         while ((key = (TKey*) next())) { 
@@ -167,16 +195,26 @@ void read_tree(){
             for (int iEntry = 0;iEntry < tree -> GetEntries();iEntry++) {
                 tree -> GetEntry(iEntry);
 
-                if (fMass < 2.9 || fMass > 3.2) continue;
-                if (fSign != 0) continue;
+                if (fMass < 2 || fMass > 5) continue;
                 //if(fMcDecision == 1) continue; // selecting signal only
                 if (TMath::Abs(fEta) < 2.5 || TMath::Abs(fEta) > 4) continue;
                 if (TMath::Abs(fEta1) < 2.5 || TMath::Abs(fEta1) > 4) continue;
                 if (TMath::Abs(fEta2) < 2.5 || TMath::Abs(fEta2) > 4) continue;
                 if (fChi2MatchMCHMID1 > 45 || fChi2MatchMCHMID2 > 45) continue;
 
-                hist_mass[fIn_counter] -> Fill(fMass);
-                hist_tauz[fIn_counter] -> Fill(fTauz);
+                if (fSign > 0) {
+                    hist_mass_lspp[fIn_counter] -> Fill(fMass);
+                    hist_tauz_lspp[fIn_counter] -> Fill(fTauz);
+                }
+                if (fSign < 0) {
+                    hist_mass_lsmm[fIn_counter] -> Fill(fMass);
+                    hist_tauz_lsmm[fIn_counter] -> Fill(fTauz);
+                }
+
+
+                if (fSign != 0) continue;
+                hist_mass_ospm[fIn_counter] -> Fill(fMass);
+                hist_tauz_ospm[fIn_counter] -> Fill(fTauz);
                 hist_cosPointingAngle[fIn_counter] -> Fill(TMath::Abs(fCosPointingAngle));
                 hist_pt[fIn_counter] -> Fill(fPt);
                 hist_eta[fIn_counter] -> Fill(fEta);
@@ -207,9 +245,10 @@ void read_tree(){
                 mu2_smeared.SetPxPyPzE(mu2_Px, mu2_Py, mu2_Pz, mu2_E);
 
                 TLorentzVector dimuon_smeared = mu1_smeared + mu2_smeared;
-                hist_mass_smeared[fIn_counter] -> Fill(dimuon_smeared.M());
+                hist_mass_ospm_smeared[fIn_counter] -> Fill(dimuon_smeared.M());
             }
         }
+        fIn_tree -> Close();
         fIn_counter++;
     }
 
@@ -218,17 +257,17 @@ void read_tree(){
 
     canvas_var -> cd(1);
     for (int i = 0;i < fIn_number;i++) {
-        //hist_mass[i] -> Scale(1. / hist_mass[i] -> Integral());
-        hist_mass[i] -> Draw("EP SAME");
-        //hist_mass_smeared[i] -> Scale(1. / hist_mass_smeared[i] -> Integral());
-        hist_mass_smeared[i] -> Draw("H SAME");
+        //hist_mass_ospm[i] -> Scale(1. / hist_mass_ospm[i] -> Integral());
+        hist_mass_ospm[i] -> Draw("EP SAME");
+        //hist_mass_ospm_smeared[i] -> Scale(1. / hist_mass_ospm_smeared[i] -> Integral());
+        hist_mass_ospm_smeared[i] -> Draw("H SAME");
     }
 
     canvas_var -> cd(2);
     gPad -> SetLogy(1);
     for (int i = 0;i < fIn_number;i++) {
-        hist_tauz[i] -> Scale(1. / hist_tauz[i] -> Integral());
-        hist_tauz[i] -> Draw("EP SAME");
+        hist_tauz_ospm[i] -> Scale(1. / hist_tauz_ospm[i] -> Integral());
+        hist_tauz_ospm[i] -> Draw("EP SAME");
     }
 
     canvas_var -> cd(3);
@@ -283,7 +322,12 @@ void read_tree(){
 
     TFile *fOut = new TFile("MC_signal.root", "RECREATE");
     for (int i = 0;i < fIn_number;i++) {
-        hist_mass[i] -> Write(Form("%s_mass", hist_names[i].c_str()));
-        hist_mass_smeared[i] -> Write(Form("%s_mass_smeared", hist_names[i].c_str()));
+        hist_mass_ospm[i] -> Write(Form("%s_mass_ospm", hist_names[i].c_str()));
+        hist_mass_lspp[i] -> Write(Form("%s_mass_lspp", hist_names[i].c_str()));
+        hist_mass_lsmm[i] -> Write(Form("%s_mass_lsmm", hist_names[i].c_str()));
+        hist_tauz_ospm[i] -> Write(Form("%s_tauz_ospm", hist_names[i].c_str()));
+        hist_tauz_lspp[i] -> Write(Form("%s_tauz_lspp", hist_names[i].c_str()));
+        hist_tauz_lsmm[i] -> Write(Form("%s_tauz_lsmm", hist_names[i].c_str()));
+        hist_mass_ospm_smeared[i] -> Write(Form("%s_mass_ospm_smeared", hist_names[i].c_str()));
     }
 }
