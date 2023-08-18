@@ -1,12 +1,12 @@
 import ROOT
 from ROOT import RooFit
 
-PATH_DATA = "/afs/cern.ch/user/l/lvicenik/private/summer_student_quarkonia_run3/root_files/"
-PATH_IMGS = "/afs/cern.ch/user/l/lvicenik/private/summer_student_quarkonia_run3/imgs/"
-PATH_WORKSPACE = "/afs/cern.ch/user/l/lvicenik/private/summer_student_quarkonia_run3/workspaces/"
+PATH_DATA = "root_files/"
+PATH_IMGS = "imgs/"
+#PATH_WORKSPACE = "/afs/cern.ch/user/l/lvicenik/private/summer_student_quarkonia_run3/workspaces/"
 
 
-ht_data_cut_file = ROOT.TFile(PATH_DATA + "template_tune_45_4-6.root")
+ht_data_cut_file = ROOT.TFile(PATH_DATA + "template_tune_45_6-10.root")
 ht_data = ht_data_cut_file.Get("htnon")
 ht_data.Scale(1. / ht_data.Integral())
 
@@ -71,6 +71,6 @@ canvas.SaveAs(PATH_IMGS + "tauz_template_nonprompt_fit.png")
 tauz_nonprompt_fit_workspace = ROOT.RooWorkspace("tauz_nonprompt_fit_workspace")
 tauz_nonprompt_fit_workspace.Import(model_t)
 
-workspace_file = ROOT.TFile(PATH_WORKSPACE + "tauz_nonprompt_landau_cheb_fit_workspace.root", "RECREATE")
-tauz_nonprompt_fit_workspace.Write()
-workspace_file.Close()
+#workspace_file = ROOT.TFile(PATH_WORKSPACE + "tauz_nonprompt_landau_cheb_fit_workspace.root", "RECREATE")
+#tauz_nonprompt_fit_workspace.Write()
+#workspace_file.Close()

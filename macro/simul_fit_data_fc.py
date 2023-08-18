@@ -1,15 +1,13 @@
 import ROOT
 from ROOT import *
 
-PATH = "/afs/cern.ch/user/l/lvicenik/alice/"
-PATH_DATA = "/afs/cern.ch/user/l/lvicenik/private/summer_student_quarkonia_run3/root_files/"
-PATH_IMGS = "/afs/cern.ch/user/l/lvicenik/private/summer_student_quarkonia_run3/imgs/"
-PATH_WORKSPACE = "/afs/cern.ch/user/l/lvicenik/private/summer_student_quarkonia_run3/workspaces/"
+PATH_DATA = "root_files/"
+PATH_IMGS = "imgs/"
 
 
-template_file = ROOT.TFile(PATH_DATA + "template_tune_45_4-6.root")
+template_file = ROOT.TFile(PATH_DATA + "template_tune_45_6-10.root")
 
-data_file = ROOT.TFile(PATH_DATA + "data_tune_45_4-6_bkg_extr.root")
+data_file = ROOT.TFile(PATH_DATA + "data_tune_45_6-10_bkg_extr.root")
 
 
 hm_data = data_file.Get("hm")
@@ -85,13 +83,15 @@ datahist_data_t = ROOT.RooDataHist("datahistdatat", "DataHist data t", ROOT.RooA
 
 mean_mass = ROOT.RooRealVar("mean_mass", "mean_mass", 3.08869e+00, 2.9, 3.5)
 sigma_mass = ROOT.RooRealVar("sigma_mass", "Sigma",  9.67680e-02, 0, 1)
-alpha_mass = ROOT.RooRealVar("alpha_mass", "Alpha", -4.24241e+00, -10, 10)
-n_mass = ROOT.RooRealVar("n_mass", "n_mass",5.25992e+00, 0, 10)
+alpha_mass = ROOT.RooRealVar("alpha_mass", "Alpha", -9.21012e-01)
+n_mass = ROOT.RooRealVar("n_mass", "n_mass",2.09918e+00)
 cb_pdf_mass = ROOT.RooCBShape("cb_pdf_mass", "Crystal Ball PDF", mass, mean_mass, sigma_mass, alpha_mass, n_mass)
 
 cheb_coeffs_mass = [ROOT.RooRealVar(f"cheb_coeff_{i}", f"Coeff_{i}", 0.01, -3.5, 3.5) for i in range(6)]
 
-coefs_mass = [-9.57813e-01, 6.21144e-02, 7.22575e-02, 4.49786e-02, -7.54956e-02,  3.04565e-02]
+#coefs_mass = [-9.57813e-01, 6.21144e-02, 7.22575e-02, 4.49786e-02, -7.54956e-02,  3.04565e-02]
+coefs_mass = [-9.18303e-01, 2.50965e-01, -1.47898e-02, -3.26950e-02, 5.06778e-03, 3.09662e-02]
+
 for i, coef_value in enumerate(coefs_mass):
     cheb_coeffs_mass[i].setVal(coef_value)
     cheb_coeffs_mass[i].setConstant(True)
@@ -143,9 +143,9 @@ m_bg_num = nBkg
 t_bg_num = nBkg
 
 
-nJPsi = ROOT.RooRealVar("nJPsi", "number of JPsi", 4.05081e+04, 4e3, 4e6)
+nJPsi = ROOT.RooRealVar("nJPsi", "number of JPsi", 4.05081e+04, 0, 1e6)
 nBkgVar = ROOT.RooRealVar("nBkg", "number of background",  2.17768e+05, 2e4, 4e8)  
-nonPrompFrac = ROOT.RooRealVar("nonPrompFrac", "non prompt fraction", 0.1)
+nonPrompFrac = ROOT.RooRealVar("nonPrompFrac", "non prompt fraction", 0.15, 0, 1)
 
 TotalnJPsi = ROOT.RooFormulaVar("prompFrac", "@0*(1-@1)", ROOT.RooArgList(nJPsi,nonPrompFrac))
 TotalnJPsiNon = ROOT.RooFormulaVar("nonprompFrac", "@0*@1", ROOT.RooArgList(nJPsi,nonPrompFrac))
@@ -190,25 +190,19 @@ model_m_all = ROOT.RooAddPdf("model_m_all", "Crystal Ball + Chebyshev",
 #     cheb_coeffs_tauz_bkg[i].setVal(coef_value)
 #     cheb_coeffs_tauz_bkg[i].setConstant(True)
 
-mean_bw_tauz_bkg = ROOT.RooRealVar("mean_bw_tauz_bkg", "Mean bw", 0.0)
-width_bw_tauz_bkg = ROOT.RooRealVar("width_bw_tauz_bkg", "Width bw", 1.41068e-03)
+mean_bw_tauz_bkg = ROOT.RooRealVar("mean_bw_tauz_bkg", "Mean bw", 8.323918826602661e-05)
+width_bw_tauz_bkg = ROOT.RooRealVar("width_bw_tauz_bkg", "Width bw", 0.0011265097652047307)
 bw_pdf_tauz_bkg = ROOT.RooBreitWigner("bw_tauz_bkg", "Breit-Wigner Distribution", tauz, mean_bw_tauz_bkg, width_bw_tauz_bkg)
 
 
-mean_cb_tauz_bkg = ROOT.RooRealVar("mean_cb_tauz_bkg", "Mean_cb",  7.32785e-04)
-sigma_cb_tauz_bkg = ROOT.RooRealVar("sigma_cb_tauz_bkg", "Sigma",9.92521e-03)
-alpha_cb_tauz_bkg = ROOT.RooRealVar("alpha_cb_tauz_bkg", "Alpha", -3.75169e+00)
-n_cb_tauz_bkg = ROOT.RooRealVar("n_cb_tauz_bkg", "n", 9.53674e-05)
+mean_cb_tauz_bkg = ROOT.RooRealVar("mean_cb_tauz_bkg", "Mean_cb",  0.0012540488964024599)
+sigma_cb_tauz_bkg = ROOT.RooRealVar("sigma_cb_tauz_bkg", "Sigma",0.007821523272251163)
+alpha_cb_tauz_bkg = ROOT.RooRealVar("alpha_cb_tauz_bkg", "Alpha", -6.8068415906107305)
+n_cb_tauz_bkg = ROOT.RooRealVar("n_cb_tauz_bkg", "n", 9.53673999992688e-05)
 cb_pdf_tauz_bkg = ROOT.RooCBShape("cb_pdf_tauz_bkg", "Crystal Ball PDF", tauz, mean_cb_tauz_bkg, sigma_cb_tauz_bkg, alpha_cb_tauz_bkg, n_cb_tauz_bkg)
 
-
-model_frac_tauz_bkg = ROOT.RooRealVar("model_frac_tauz_bkg", "model_frac_tauz_bkg", 2.49807e-01 )
+model_frac_tauz_bkg = ROOT.RooRealVar("model_frac_tauz_bkg", "model_frac_tauz_bkg", 1.22147e-01)
 model_tauz_bkg = ROOT.RooAddPdf("model_tauz_bkg", "model_tauz_bkg", ROOT.RooArgList(bw_pdf_tauz_bkg, cb_pdf_tauz_bkg), ROOT.RooArgList(model_frac_tauz_bkg))
-
-
-
-
-
 
 
 mean_landau_tauz_nonprompt = ROOT.RooRealVar("mean_landau_tauz_nonprompt", "mean_landau_tauz_nonprompt",  4.00748e-04)
@@ -312,7 +306,7 @@ combData.plotOn(frame2, ROOT.RooFit.Cut("cat==cat::tauzCat"))
 simfit.plotOn(frame2, ROOT.RooFit.Name("tauz_all_pdf"), Slice=(cat, "tauzCat"), ProjWData=(cat,combData))
 simfit.plotOn(frame2, ROOT.RooFit.Name("model_prompt_pdf"), Slice=(cat, "tauzCat"), Components="model_tauz_prompt", ProjWData=(cat,combData), LineStyle="--", LineColor=ROOT.kRed+1)
 simfit.plotOn(frame2, ROOT.RooFit.Name("model_nonprompt_pdf"), Slice=(cat, "tauzCat"), Components="model_tauz_nonprompt", ProjWData=(cat,combData), LineStyle="--", LineColor=ROOT.kAzure+4)
-simfit.plotOn(frame2, ROOT.RooFit.Name("model_background_pdf"), Slice=(cat, "tauzCat"), Components="model_tauz_background", ProjWData=(cat,combData), LineStyle="--", LineColor=ROOT.kGreen+2)
+simfit.plotOn(frame2, ROOT.RooFit.Name("model_background_pdf"), Slice=(cat, "tauzCat"), Components="model_tauz_bkg", ProjWData=(cat,combData), LineStyle="--", LineColor=ROOT.kGreen+2)
 # model_t_prompt.plotOn(frame2, LineColor=ROOT.kRed+1)
 # model_t_background.plotOn(frame2, LineColor=ROOT.kGreen+1)
 # model_t_nonprompt.plotOn(frame2, LineColor=ROOT.kBlue+1)
@@ -345,7 +339,7 @@ frame2.Draw()
 legend2.Draw()
 
 canvas.Update()
-canvas.SaveAs(PATH_IMGS + "simul_fit_data_4-6_fc.png")
+canvas.SaveAs(PATH_IMGS + "simul_fit_data_6-10_fc.png")
 
 
 

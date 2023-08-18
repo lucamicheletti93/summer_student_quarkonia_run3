@@ -1,8 +1,8 @@
 import ROOT
 from ROOT import TFile, RooRealVar, RooDataHist, RooArgList, RooFit, RooHistPdf
 
-myfile = TFile('/home/lucas/Documents/CERN/alice_project/alice/root/MC_prompt_jpsi_update.root')
-myfile_non = TFile('/home/lucas/Documents/CERN/alice_project/alice/root/MC_non_prompt_jpsi_update.root')
+myfile = TFile('/Users/lucamicheletti/cernbox/summer_student_quarkonia_run3/data/MC_prompt_jpsi_update.root')
+myfile_non = TFile('/Users/lucamicheletti/cernbox/summer_student_quarkonia_run3/data/MC_non_prompt_jpsi_update.root')
 treeList = []
 
 # Get the list of keys in the file
@@ -37,6 +37,7 @@ for key in keys:
         fChi2MatchMCHMFT2= getattr(e, 'fChi2MatchMCHMFT2')
         fChi2pca = getattr(e, 'fChi2pca')
         fPt = getattr(e, 'fPt')
+        fTauzTemp = getattr(e, 'fTauz')
 
         
         if fSign != 0: continue
@@ -45,7 +46,8 @@ for key in keys:
         if (abs(fEta2) < 2.5 or abs(fEta2) > 4.0): continue 
         if (fChi2MatchMCHMFT1 > 45 or fChi2MatchMCHMFT2 > 45): continue
         if fChi2pca < 0: continue
-        if fPt < 4 or fPt > 6: continue
+        if fPt < 6 or fPt > 10: continue
+        if abs(fTauzTemp) > 0.007: continue
             
         valm = getattr(e, fMass)
         valt = getattr(e, fTauz)
@@ -73,6 +75,7 @@ for key in keys_non:
         fChi2MatchMCHMFT2= getattr(e, 'fChi2MatchMCHMFT2')
         fChi2pca = getattr(e, 'fChi2pca')
         fPt = getattr(e, 'fPt')
+        fTauzTemp = getattr(e, 'fTauz')
 
 
         if fSign != 0: continue
@@ -81,7 +84,8 @@ for key in keys_non:
         if (abs(fEta2) < 2.5 or abs(fEta2) > 4.0): continue 
         if (fChi2MatchMCHMFT1 > 45 or fChi2MatchMCHMFT2 > 45): continue
         #if fChi2pca < 0: continue
-        if fPt < 4 or fPt > 6: continue
+        if fPt < 6 or fPt > 10: continue
+        if abs(fTauzTemp) > 0.007: continue
         
         valm = getattr(e, fMass)
         valt = getattr(e, fTauz)
@@ -118,17 +122,17 @@ hm_comb.SetMarkerStyle(ROOT.kFullCross)
 hm_comb.SetMarkerColor(ROOT.kBlue)
 hm_comb.SetMarkerSize(0.6)
 
-ht = ROOT.TH1F("ht","Dimuon pseudoproper decay length ;m (GeV/c^2);#", 100, -0.01, 0.01)
+ht = ROOT.TH1F("ht","Dimuon pseudoproper decay length ;m (GeV/c^2);#", 100, -0.007, 0.007)
 ht.SetMarkerStyle(ROOT.kFullCross)
 ht.SetMarkerColor(ROOT.kRed)
 ht.SetMarkerSize(0.6)
 
-htnon = ROOT.TH1F("htnon", str(fTauz)+";m (GeV/c^2);#", 100, -0.01, 0.01)
+htnon = ROOT.TH1F("htnon", str(fTauz)+";m (GeV/c^2);#", 100, -0.007, 0.007)
 htnon.SetMarkerStyle(ROOT.kFullCross)
 htnon.SetMarkerColor(ROOT.kBlue)
 htnon.SetMarkerSize(0.6)
 
-ht_comb = ROOT.TH1F("htnon", str(fTauz)+";m (GeV/c^2);#", 100, -0.01, 0.01)
+ht_comb = ROOT.TH1F("htnon", str(fTauz)+";m (GeV/c^2);#", 100, -0.007, 0.007)
 ht_comb.SetMarkerStyle(ROOT.kFullCross)
 ht_comb.SetMarkerColor(ROOT.kBlue)
 ht_comb.SetMarkerSize(0.6)
@@ -163,31 +167,31 @@ htnon.Draw('P')
 ht.Draw("P SAME")
 
 c.Draw()
-c.SaveAs("output_hists_tune_45_4-6.png")
+c.SaveAs("imgs/output_hists_tune_45_6-10.png")
 #print(hm)
 
-# fl1 = ROOT.TFile("hm_tune_45_4-6.root", "RECREATE")
+# fl1 = ROOT.TFile("hm_tune_45_6-10.root", "RECREATE")
 # hm.Write()
 # fl1.Close()
 
 # # file = ROOT.TFile("hm.root")
 # # hm_deserialized = file.Get("hm")
 
-# fl2 = ROOT.TFile("hmnon_tune_45_4-6.root", "RECREATE")
+# fl2 = ROOT.TFile("hmnon_tune_45_6-10.root", "RECREATE")
 # hmnon.Write()
 # fl2.Close()
 
 
-# fl3 = ROOT.TFile("ht_tune_45_4-6.root", "RECREATE")
+# fl3 = ROOT.TFile("ht_tune_45_6-10.root", "RECREATE")
 # ht.Write()
 # fl2.Close()
 
-# fl4 = ROOT.TFile("htnon_tune_45_4-6.root", "RECREATE")
+# fl4 = ROOT.TFile("htnon_tune_45_6-10.root", "RECREATE")
 # htnon.Write()
 # fl2.Close()
 
 
-fl = ROOT.TFile("template_tune_45_4-6.root", "RECREATE")
+fl = ROOT.TFile("root_files/template_tune_45_6-10.root", "RECREATE")
 hm.Write()
 hmnon.Write()
 ht.Write()

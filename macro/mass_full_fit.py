@@ -1,9 +1,9 @@
 import ROOT
 
-PATH_DATA = "/afs/cern.ch/user/l/lvicenik/private/summer_student_quarkonia_run3/root_files/"
-PATH_IMGS = "/afs/cern.ch/user/l/lvicenik/private/summer_student_quarkonia_run3/imgs/"
+PATH_DATA = "root_files/"
+PATH_IMGS = "imgs/"
 
-hm_data_file = ROOT.TFile(PATH_DATA + "hm_data_tune_45_4-6.root")
+hm_data_file = ROOT.TFile(PATH_DATA + "data_tune_45_6-10_bkg_extr.root")
 hm_data = hm_data_file.Get("hm")
 hm_data.Scale(1. / hm_data.Integral())
 

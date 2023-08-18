@@ -9,7 +9,7 @@ import numpy
 
 start_time = time.time()
 
-myfile = TFile('/media/lucas/ADATA SE760/CERN/AO2D_cut.root')
+myfile = TFile('/Users/lucamicheletti/cernbox/summer_student_quarkonia_run3/data/LHC22o/AO2D.root')
 #myfile = TFile('/home/lucas/Documents/CERN/alice_project/alice/root/data_new.root')
 treeList = []
 
@@ -36,17 +36,17 @@ hm_mm.SetMarkerStyle(ROOT.kFullCross)
 hm_mm.SetMarkerColor(ROOT.kRed)
 hm_mm.SetMarkerSize(0.6)
 
-ht = ROOT.TH1F("ht","Dimuon pseudoproper decay length ;m (GeV/c^2);#", 100, -0.01, 0.01)
+ht = ROOT.TH1F("ht","Dimuon pseudoproper decay length ;m (GeV/c^2);#", 100, -0.007, 0.007)
 ht.SetMarkerStyle(ROOT.kFullCross)
 ht.SetMarkerColor(ROOT.kBlue)
 ht.SetMarkerSize(0.6)
 
-ht_pp = ROOT.TH1F("ht_pp","Dimuon pseudoproper decay length ;m (GeV/c^2);#", 100, -0.01, 0.01)
+ht_pp = ROOT.TH1F("ht_pp","Dimuon pseudoproper decay length ;m (GeV/c^2);#", 100, -0.007, 0.007)
 ht_pp.SetMarkerStyle(ROOT.kFullCross)
 ht_pp.SetMarkerColor(ROOT.kRed)
 ht_pp.SetMarkerSize(0.6)
 
-ht_mm = ROOT.TH1F("ht_mm","Dimuon pseudoproper decay length ;m (GeV/c^2);#", 100, -0.01, 0.01)
+ht_mm = ROOT.TH1F("ht_mm","Dimuon pseudoproper decay length ;m (GeV/c^2);#", 100, -0.007, 0.007)
 ht_mm.SetMarkerStyle(ROOT.kFullCross)
 ht_mm.SetMarkerColor(ROOT.kRed)
 ht_mm.SetMarkerSize(0.6)
@@ -57,7 +57,7 @@ hm_cut.SetMarkerColor(ROOT.kRed)
 hm_cut.SetMarkerSize(0.6)
 
 
-ht_cut = ROOT.TH1F("ht_cut","Dimuon pseudoproper decay length ;m (GeV/c^2);#", 100, -0.01, 0.01)
+ht_cut = ROOT.TH1F("ht_cut","Dimuon pseudoproper decay length ;m (GeV/c^2);#", 100, -0.007, 0.007)
 ht_cut.SetMarkerStyle(ROOT.kFullCross)
 ht_cut.SetMarkerColor(ROOT.kRed)
 ht_cut.SetMarkerSize(0.6)
@@ -72,18 +72,18 @@ hm_sig.SetMarkerStyle(ROOT.kFullCross)
 hm_sig.SetMarkerColor(ROOT.kRed)
 hm_sig.SetMarkerSize(0.6)
 
-ht_bkg = ROOT.TH1F("ht_bkg","Dimuon pseudoproper decay length ;m (GeV/c^2);#", 100, -0.01, 0.01)
+ht_bkg = ROOT.TH1F("ht_bkg","Dimuon pseudoproper decay length ;m (GeV/c^2);#", 100, -0.007, 0.007)
 ht_bkg.SetMarkerStyle(ROOT.kFullCross)
 ht_bkg.SetMarkerColor(ROOT.kGreen)
 ht_bkg.SetMarkerSize(0.6)
 
-ht_sig = ROOT.TH1F("ht_sig","Dimuon pseudoproper decay length ;m (GeV/c^2);#", 100, -0.01, 0.01)
+ht_sig = ROOT.TH1F("ht_sig","Dimuon pseudoproper decay length ;m (GeV/c^2);#", 100, -0.007, 0.007)
 ht_sig.SetMarkerStyle(ROOT.kFullCross)
 ht_sig.SetMarkerColor(ROOT.kRed)
 ht_sig.SetMarkerSize(0.6)
 
 
-tauz = ROOT.RooRealVar("Dimuon tauz", "Dimuon pseudoproper decay length", -0.01, 0.01)
+tauz = ROOT.RooRealVar("Dimuon tauz", "Dimuon pseudoproper decay length", -0.007, 0.007)
 
 accumulated_data = {
     'fMass': [],
@@ -110,7 +110,8 @@ conds = (
     "abs(fEta2) < 2.5 || abs(fEta2) > 4.0 || "
     "(fChi2MatchMCHMFT1 > 45 || fChi2MatchMCHMFT2 > 45) ||"
     #"fChi2pca < 0")
-    "fPt < 4 || fPt > 6)")
+    "fPt < 6 || fPt > 10 ||"
+    "abs(fTauz) > 0.007 )")
 
 for key in keys:
     obj_name = key.GetName()
@@ -250,7 +251,7 @@ ht.Draw("P")
 ht_cut.Draw("P SAME")
 
 c1.Draw()
-c1.SaveAs("output_hists_data_new_tune_45_4-6_sign_plus.png")
+c1.SaveAs("imgs/output_hists_data_new_tune_45_6-10_sign_plus.png")
 
 
 
@@ -266,31 +267,31 @@ c2.Draw()
 
 
 
-c2.SaveAs("output_hists_data_new_tune_45_4-6_bkg_comp.png")
+c2.SaveAs("imgs/output_hists_data_new_tune_45_6-10_bkg_comp.png")
 
 print(hm)
 
-# fl1 = ROOT.TFile("hm_data_tune_45_4-6.root", "RECREATE")
+# fl1 = ROOT.TFile("hm_data_tune_45_6-10.root", "RECREATE")
 # hm.Write()
 # fl1.Close()
 
-# fl2 = ROOT.TFile("ht_data_tune_45_4-6.root", "RECREATE")
+# fl2 = ROOT.TFile("ht_data_tune_45_6-10.root", "RECREATE")
 # ht.Write()
 # fl2.Close()
 
-# fl3 = ROOT.TFile("hm_data_cut_tune_45_4-6.root", "RECREATE")
+# fl3 = ROOT.TFile("hm_data_cut_tune_45_6-10.root", "RECREATE")
 # hm_cut.Write()
 # fl3.Close()
 
-# fl4 = ROOT.TFile("ht_data_cut_tune_45_4-6.root", "RECREATE")
+# fl4 = ROOT.TFile("ht_data_cut_tune_45_6-10.root", "RECREATE")
 # ht_bg.Write()
 # fl4.Close()
 
-# fl5 = ROOT.TFile("hm_data_bg_tune_45_4-6.root", "RECREATE")
+# fl5 = ROOT.TFile("hm_data_bg_tune_45_6-10.root", "RECREATE")
 # hm_bg.Write()
 # fl5.Close()
 
-fl = ROOT.TFile("data_tune_45_4-6_sign_plus.root", "RECREATE")
+fl = ROOT.TFile("root_files/data_tune_45_6-10_bkg_extr.root", "RECREATE")
 hm.Write()
 ht.Write()
 
