@@ -8,9 +8,9 @@ PATH_WORKSPACE = "/afs/cern.ch/user/l/lvicenik/private/summer_student_quarkonia_
 
 ht_data_cut_file = ROOT.TFile(PATH_DATA + "template_tune_45_4-6.root")
 ht_data = ht_data_cut_file.Get("ht")
-ht_data.Scale(1. / ht_data.Integral())
+#ht_data.Scale(1. / ht_data.Integral())
 
-tauz = ROOT.RooRealVar("Dimuon tauz", "Dimuon pseudoproper decay length", -0.003, 0.003)
+tauz = ROOT.RooRealVar("Dimuon tauz", "Dimuon pseudoproper decay length", -0.01, 0.01)
 
 datahist_data_t = ROOT.RooDataHist("datahisttdatabg", "DataHist t data bg", ROOT.RooArgList(tauz), ht_data)
 
@@ -40,7 +40,7 @@ model_t = ROOT.RooAddPdf("model_prompt_pdf", "Breit Wiegner + Chebyshev", ROOT.R
 model_t.fitTo(datahist_data_t)
 
 
-frame = tauz.frame(ROOT.RooFit.Title("Invariant mass background")) 
+frame = tauz.frame(ROOT.RooFit.Title("Pseudo proper decay length prompt")) 
 datahist_data_t.plotOn(frame)
 model_t.plotOn(frame)
 

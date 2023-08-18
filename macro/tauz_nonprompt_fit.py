@@ -8,9 +8,9 @@ PATH_WORKSPACE = "/afs/cern.ch/user/l/lvicenik/private/summer_student_quarkonia_
 
 ht_data_cut_file = ROOT.TFile(PATH_DATA + "template_tune_45_4-6.root")
 ht_data = ht_data_cut_file.Get("htnon")
-ht_data.Scale(1. / ht_data.Integral())
+#ht_data.Scale(1. / ht_data.Integral())
 
-tauz = ROOT.RooRealVar("Dimuon tauz", "Dimuon pseudoproper decay length", -0.003, 0.003)
+tauz = ROOT.RooRealVar("Dimuon tauz", "Dimuon pseudoproper decay length", -0.01, 0.01)
 
 datahist_data_t = ROOT.RooDataHist("datahisttdatabg", "DataHist t data bg", ROOT.RooArgList(tauz), ht_data)
 
@@ -38,7 +38,7 @@ landau_pdf = ROOT.RooLandau("landau", "Landau PDF", tauz, location, scale)
 
 
 
-cheb_coeffs = [ROOT.RooRealVar(f"cheb_coeff_{i}", f"Coeff_{i}", 0.05, -0.26, 0.26) for i in range(2)]
+cheb_coeffs = [ROOT.RooRealVar(f"cheb_coeff_{i}", f"Coeff_{i}", 0.05, -0.38, 0.38) for i in range(2)]
 cheb_poly = ROOT.RooChebychev("cheb_poly", "Chebyshev Polynomial", tauz, ROOT.RooArgList(*cheb_coeffs))
 
 # poly_coeffs = [ROOT.RooRealVar(f"poly_coeff_{i}", f"Coeff_{i}", 0.01, -0.05, 0.05) for i in range(5)]
@@ -57,7 +57,7 @@ model_t.fitTo(datahist_data_t)
 
 
 
-frame = tauz.frame(ROOT.RooFit.Title("Invariant mass background")) 
+frame = tauz.frame(ROOT.RooFit.Title("Pseudo proper decay length nonprompt")) 
 datahist_data_t.plotOn(frame)
 model_t.plotOn(frame)
 #cheb_poly.plotOn(frame)
