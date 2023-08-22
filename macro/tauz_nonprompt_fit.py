@@ -1,16 +1,16 @@
 import ROOT
 from ROOT import RooFit
 
-PATH_DATA = "root_files/"
-PATH_IMGS = "imgs/"
+PATH_DATA = "/afs/cern.ch/user/l/lvicenik/private/summer_student_quarkonia_run3/root_files/"
+PATH_IMGS = "/afs/cern.ch/user/l/lvicenik/private/summer_student_quarkonia_run3/imgs/"
 #PATH_WORKSPACE = "/afs/cern.ch/user/l/lvicenik/private/summer_student_quarkonia_run3/workspaces/"
 
 
-ht_data_cut_file = ROOT.TFile(PATH_DATA + "template_tune_45_6-10.root")
+ht_data_cut_file = ROOT.TFile(PATH_DATA + "template_tune_45_4-6.root")
 ht_data = ht_data_cut_file.Get("htnon")
-ht_data.Scale(1. / ht_data.Integral())
+#ht_data.Scale(1. / ht_data.Integral())
 
-tauz = ROOT.RooRealVar("Dimuon tauz", "Dimuon pseudoproper decay length", -0.003, 0.003)
+tauz = ROOT.RooRealVar("Dimuon tauz", "Dimuon pseudoproper decay length", -0.007, 0.007)
 
 datahist_data_t = ROOT.RooDataHist("datahisttdatabg", "DataHist t data bg", ROOT.RooArgList(tauz), ht_data)
 
@@ -32,13 +32,12 @@ datahist_data_t = ROOT.RooDataHist("datahisttdatabg", "DataHist t data bg", ROOT
 # cb_pdf = ROOT.RooCBShape("crystal_ball", "Crystal Ball PDF", tauz, mean, sigma, alpha, n)
 
 location = ROOT.RooRealVar("location", "Location", 0.0, -0.1, 0.1)
-scale = ROOT.RooRealVar("scale", "Scale", 0.01, 0.00001, 0.1)
+scale = ROOT.RooRealVar("scale", "Scale", 3.60098e-04, 1e-7, 0.1)
 
 landau_pdf = ROOT.RooLandau("landau", "Landau PDF", tauz, location, scale)
 
 
-
-cheb_coeffs = [ROOT.RooRealVar(f"cheb_coeff_{i}", f"Coeff_{i}", 0.05, -0.26, 0.26) for i in range(2)]
+cheb_coeffs = [ROOT.RooRealVar(f"cheb_coeff_{i}", f"Coeff_{i}", 0.05, -0.36, 0.36) for i in range(2)]
 cheb_poly = ROOT.RooChebychev("cheb_poly", "Chebyshev Polynomial", tauz, ROOT.RooArgList(*cheb_coeffs))
 
 # poly_coeffs = [ROOT.RooRealVar(f"poly_coeff_{i}", f"Coeff_{i}", 0.01, -0.05, 0.05) for i in range(5)]
@@ -68,8 +67,8 @@ canvas.Draw()
 
 canvas.SaveAs(PATH_IMGS + "tauz_template_nonprompt_fit.png")
 
-tauz_nonprompt_fit_workspace = ROOT.RooWorkspace("tauz_nonprompt_fit_workspace")
-tauz_nonprompt_fit_workspace.Import(model_t)
+# tauz_nonprompt_fit_workspace = ROOT.RooWorkspace("tauz_nonprompt_fit_workspace")
+# tauz_nonprompt_fit_workspace.Import(model_t)
 
 #workspace_file = ROOT.TFile(PATH_WORKSPACE + "tauz_nonprompt_landau_cheb_fit_workspace.root", "RECREATE")
 #tauz_nonprompt_fit_workspace.Write()
