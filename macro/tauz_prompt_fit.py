@@ -1,7 +1,7 @@
 import ROOT
 
-PATH_DATA = "/afs/cern.ch/user/l/lvicenik/private/summer_student_quarkonia_run3/root_files/"
-PATH_IMGS = "/afs/cern.ch/user/l/lvicenik/private/summer_student_quarkonia_run3/imgs/"
+PATH_DATA = "root_files/"
+PATH_IMGS = "imgs/"
 #PATH_WORKSPACE = "/afs/cern.ch/user/l/lvicenik/private/summer_student_quarkonia_run3/workspaces/"
 
 ht_data_cut_file = ROOT.TFile(PATH_DATA + "template_tune_45_4-6.root")

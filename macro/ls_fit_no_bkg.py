@@ -6,12 +6,12 @@ import math
 import numpy as np
 import numpy
 
-PATH_DATA = "/afs/cern.ch/user/l/lvicenik/private/summer_student_quarkonia_run3/root_files/"
-PATH_IMGS = "/afs/cern.ch/user/l/lvicenik/private/summer_student_quarkonia_run3/imgs/"
+PATH_DATA = "root_files/"
+PATH_IMGS = "imgs/"
 
 
 ls_fit_file = ROOT.TFile(PATH_DATA + "data_tune_45_4-6_bkg_extr.root")
-ht_ls_sig_data = ls_fit_file.Get("ht_sig")
+ht_ls_sig_data = ls_fit_file.Get("ht")
 ht_ls_bkg_data = ls_fit_file.Get("ht_bkg")
 #ht_sig.Scale(1. / ht_sig.Integral())
 
@@ -79,14 +79,15 @@ model_frac_tauz_bkg = ROOT.RooRealVar("model_frac_tauz_bkg", "model_frac_tauz_bk
 model_tauz_bkg = ROOT.RooAddPdf("model_tauz_bkg", "model_tauz_bkg", ROOT.RooArgList(bw_pdf_tauz_bkg, cb_pdf_tauz_bkg), ROOT.RooArgList(model_frac_tauz_bkg))
 #-------------------------------------------------------------------------------
 
-nJPsi = ROOT.RooRealVar("nJPsi", "number of JPsi", 1e4, 1e3, 1e7)
+#nJPsi = ROOT.RooRealVar("nJPsi", "number of JPsi", 1e4, 1e3, 1e7)
+nJPsi = ROOT.RooRealVar("nJPsi", "number of JPsi", 1.26736e+04)
 nBkgVar = ROOT.RooRealVar("nBkg", "number of background",  2.17768e+05, 2e4, 4e8)  
-nonPrompFrac = ROOT.RooRealVar("nonPrompFrac", "non prompt fraction", 0.15, 0 ,1)
+nonPrompFrac = ROOT.RooRealVar("nonPrompFrac", "non prompt fraction", 0.15)
 
 TotalnJPsi = ROOT.RooFormulaVar("prompFrac", "@0*(1-@1)", ROOT.RooArgList(nJPsi,nonPrompFrac))
 TotalnJPsiNon = ROOT.RooFormulaVar("nonprompFrac", "@0*@1", ROOT.RooArgList(nJPsi,nonPrompFrac))
 
-model_tauz_prompt_nonprompt  = ROOT.RooAddPdf("model_tauz_prompt_nonprompt", "tauz_n_pdf + tauz_pdf",
+model_tauz_prompt_nonprompt  = ROOT.RooAddPdf("model_tauz_prompt_nonprompt", "tauz_n_pdf + tauz_pdf + tauz_bkg",
     ROOT.RooArgList(model_tauz_nonprompt, model_tauz_prompt, model_tauz_bkg),
     ROOT.RooArgList(TotalnJPsiNon, TotalnJPsi, nBkgVar))
 
@@ -96,15 +97,18 @@ model_tauz_prompt_nonprompt  = ROOT.RooAddPdf("model_tauz_prompt_nonprompt", "ta
 model_tauz_prompt_nonprompt.fitTo(datahist_ls_sig)
 
 frame = tauz.frame(ROOT.RooFit.Title("")) 
-datahist_ls_sig.plotOn(frame, ROOT.RooFit.MarkerColor(ROOT.kRed+1))
-datahist_prompt.plotOn(frame, ROOT.RooFit.MarkerColor(ROOT.kBlue+1))
-datahist_nonprompt.plotOn(frame,  ROOT.RooFit.MarkerColor(ROOT.kGreen+1))
-datahist_bkg.plotOn(frame,  ROOT.RooFit.MarkerColor(ROOT.kMagenta+1))
+datahist_ls_sig.plotOn(frame, ROOT.RooFit.MarkerColor(ROOT.kBlack))
+#datahist_prompt.plotOn(frame, ROOT.RooFit.MarkerColor(ROOT.kBlue+1))
+#datahist_nonprompt.plotOn(frame,  ROOT.RooFit.MarkerColor(ROOT.kGreen+1))
+#datahist_bkg.plotOn(frame,  ROOT.RooFit.MarkerColor(ROOT.kMagenta+1))
 
-model_tauz_prompt.plotOn(frame,ROOT.RooFit.Name("model_tauz_prompt"),LineStyle="--", LineColor=ROOT.kBlue+1)
-model_tauz_nonprompt.plotOn(frame,ROOT.RooFit.Name("model_tauz_nonprompt"),LineStyle="--", LineColor=ROOT.kGreen+1)
-model_tauz_bkg.plotOn(frame,ROOT.RooFit.Name("model_tauz_bkg"),LineStyle="--", LineColor=ROOT.kMagenta+1)
+#model_tauz_prompt.plotOn(frame,ROOT.RooFit.Name("model_tauz_prompt"),LineStyle="--", LineColor=ROOT.kBlue+1)
+#model_tauz_nonprompt.plotOn(frame,ROOT.RooFit.Name("model_tauz_nonprompt"),LineStyle="--", LineColor=ROOT.kGreen+1)
+#model_tauz_bkg.plotOn(frame,ROOT.RooFit.Name("model_tauz_bkg"),LineStyle="--", LineColor=ROOT.kMagenta+1)
 model_tauz_prompt_nonprompt.plotOn(frame,ROOT.RooFit.Name("model_tauz_prompt_nonprompt"),LineColor=ROOT.kRed+1)
+model_tauz_prompt_nonprompt.plotOn(frame, ROOT.RooFit.Name("model_tauz_prompt"), Components="model_tauz_prompt",  LineStyle="--", LineColor=ROOT.kRed+1)
+model_tauz_prompt_nonprompt.plotOn(frame, ROOT.RooFit.Name("model_tauz_nonprompt"), Components="model_tauz_nonprompt", LineStyle="--", LineColor=ROOT.kAzure+4)
+model_tauz_prompt_nonprompt.plotOn(frame, ROOT.RooFit.Name("model_tauz_bkg"), Components="model_tauz_bkg", LineStyle="--", LineColor=ROOT.kGreen+2)
 #cheb_poly.plotOn(frame)
 
 canvas = ROOT.TCanvas("canvas", "Exponential Fit Canvas", 1280, 720)
@@ -116,7 +120,7 @@ legend.AddEntry(frame.findObject("model_tauz_nonprompt"), "Non prompt fraction",
 legend.AddEntry(frame.findObject("model_tauz_bkg"), "Background", "l")
 
 
-#canvas.SetLogy()
+canvas.SetLogy()
 frame.Draw()
 canvas.Draw()
 legend.Draw()

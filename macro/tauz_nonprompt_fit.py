@@ -1,8 +1,8 @@
 import ROOT
 from ROOT import RooFit
 
-PATH_DATA = "/afs/cern.ch/user/l/lvicenik/private/summer_student_quarkonia_run3/root_files/"
-PATH_IMGS = "/afs/cern.ch/user/l/lvicenik/private/summer_student_quarkonia_run3/imgs/"
+PATH_DATA = "root_files/"
+PATH_IMGS = "imgs/"
 #PATH_WORKSPACE = "/afs/cern.ch/user/l/lvicenik/private/summer_student_quarkonia_run3/workspaces/"
 
 
@@ -37,7 +37,7 @@ scale = ROOT.RooRealVar("scale", "Scale", 3.60098e-04, 1e-7, 0.1)
 landau_pdf = ROOT.RooLandau("landau", "Landau PDF", tauz, location, scale)
 
 
-cheb_coeffs = [ROOT.RooRealVar(f"cheb_coeff_{i}", f"Coeff_{i}", 0.05, -0.36, 0.36) for i in range(2)]
+cheb_coeffs = [ROOT.RooRealVar(f"cheb_coeff_{i}", f"Coeff_{i}", 0.05, -10, 0.36) for i in range(2)]
 cheb_poly = ROOT.RooChebychev("cheb_poly", "Chebyshev Polynomial", tauz, ROOT.RooArgList(*cheb_coeffs))
 
 # poly_coeffs = [ROOT.RooRealVar(f"poly_coeff_{i}", f"Coeff_{i}", 0.01, -0.05, 0.05) for i in range(5)]
