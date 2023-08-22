@@ -1,15 +1,15 @@
 import ROOT
 
-PATH_DATA = "root_files/"
-PATH_IMGS = "imgs/"
+PATH_DATA = "/afs/cern.ch/user/l/lvicenik/private/summer_student_quarkonia_run3/root_files/"
+PATH_IMGS = "/afs/cern.ch/user/l/lvicenik/private/summer_student_quarkonia_run3/imgs/"
 #PATH_WORKSPACE = "/afs/cern.ch/user/l/lvicenik/private/summer_student_quarkonia_run3/workspaces/"
 
-ht_data_cut_file = ROOT.TFile(PATH_DATA + "data_tune_45_6-10_bkg_extr.root")
+ht_data_cut_file = ROOT.TFile(PATH_DATA + "data_tune_45_4-6_bkg_extr.root")
 ht_data = ht_data_cut_file.Get("ht_bkg")
 #ht_data = ht_data_cut_file.Get("ht")
 #ht_data.Scale(1. / ht_data.Integral())
 
-tauz = ROOT.RooRealVar("Dimuon tauz", "Dimuon pseudoproper decay length", -0.006, 0.006)
+tauz = ROOT.RooRealVar("Dimuon tauz", "Dimuon pseudoproper decay length", -0.007, 0.007)
 
 datahist_data_t = ROOT.RooDataHist("datahisttdatabg", "DataHist t data bg", ROOT.RooArgList(tauz), ht_data)
 
@@ -32,12 +32,12 @@ datahist_data_t = ROOT.RooDataHist("datahisttdatabg", "DataHist t data bg", ROOT
 #cheb_poly = ROOT.RooChebychev("cheb_poly", "Chebyshev Polynomial", tauz, ROOT.RooArgList(*cheb_coeffs))
 
 
-mean_bw_tauz_bkg = ROOT.RooRealVar("mean_bw_tauz_bkg", "Mean bw", 0, 0, 10)
+mean_bw_tauz_bkg = ROOT.RooRealVar("mean_bw_tauz_bkg", "Mean bw", 0, -1, 10)
 width_bw_tauz_bkg = ROOT.RooRealVar("width_bw_tauz_bkg", "Width bw", 1.41068e-03, 0, 1)
 bw_pdf_tauz_bkg = ROOT.RooBreitWigner("bw_tauz_bkg", "Breit-Wigner Distribution", tauz, mean_bw_tauz_bkg, width_bw_tauz_bkg)
 
 
-mean_cb_tauz_bkg = ROOT.RooRealVar("mean_cb_tauz_bkg", "Mean_cb",  7.32785e-04, 0, 10)
+mean_cb_tauz_bkg = ROOT.RooRealVar("mean_cb_tauz_bkg", "Mean_cb",  7.32785e-04, -1, 10)
 sigma_cb_tauz_bkg = ROOT.RooRealVar("sigma_cb_tauz_bkg", "Sigma",9.92521e-03, 0, 10)
 alpha_cb_tauz_bkg = ROOT.RooRealVar("alpha_cb_tauz_bkg", "Alpha", -3.75169e+00, -10, 10)
 n_cb_tauz_bkg = ROOT.RooRealVar("n_cb_tauz_bkg", "n", 9.53674e-05, 0, 100)
