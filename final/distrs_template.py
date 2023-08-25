@@ -1,32 +1,48 @@
 import ROOT
 from ROOT import TFile, RooRealVar, RooDataHist, RooArgList, RooFit, RooHistPdf
 
-myfile = TFile('/Users/lucamicheletti/cernbox/summer_student_quarkonia_run3/data/MC_prompt_jpsi_update.root')
-myfile_non = TFile('/Users/lucamicheletti/cernbox/summer_student_quarkonia_run3/data/MC_non_prompt_jpsi_update.root')
+fInPrompt = TFile('/Users/lucamicheletti/cernbox/summer_student_quarkonia_run3/data/MC_prompt_jpsi_update.root')
+fInNonPrompt = TFile('/Users/lucamicheletti/cernbox/summer_student_quarkonia_run3/data/MC_non_prompt_jpsi_update.root')
 treeList = []
 
 # Get the list of keys in the file
 
-keys = myfile.GetListOfKeys()
+keys = fInPrompt.GetListOfKeys()
 keys.pop()
 
-keys_non = myfile_non.GetListOfKeys()
+keys_non = fInNonPrompt.GetListOfKeys()
 keys_non.pop()
 
-hist_arr_mass = []
-hist_arr_non_mass = []
-hist_arr_tauz = []
-hist_arr_non_tauz = []
+ptMin = [0, 2, 4, 6]
+ptMax = [2, 4, 6, 10]
+
+hMassPrompt = []
+hMassNonPrompt = []
+hTauzPrompt = []
+hTauzNonPrompt = []
+
+hMassPromptInt = ROOT.TH1F("hMassPromptInt","Dimuon mass ;m (GeV/c^2);#", 200, 2, 5)
+hTauzPromptInt = ROOT.TH1F("hTauzPromptInt","Dimuon pseudoproper decay length ;m (GeV/c^2);#", 100, -0.007, 0.007)
+hPtPromptInt = ROOT.TH1F("hPtPromptInt","Dimuon transverse momentum ;pT (GeV/c);#", 100, 0, 20)
+hEtaPromptInt = ROOT.TH1F("hEtaPromptInt","Dimuon transverse momentum ;eta;#", 100, -5, 5)
+hMassNonPromptInt = ROOT.TH1F("hMassNonPromptInt","Dimuon mass ;m (GeV/c^2);#", 200, 2, 5)
+hTauzNonPromptInt = ROOT.TH1F("hTauzNonPromptInt","Dimuon pseudoproper decay length ;m (GeV/c^2);#", 100, -0.007, 0.007)
+hPtNonPromptInt = ROOT.TH1F("hPtNonPromptInt","Dimuon transverse momentum ;pT (GeV/c);#", 100, 0, 20)
+hEtaNonPromptInt = ROOT.TH1F("hEtaNonPromptInt","Dimuon transverse momentum ;eta;#", 100, -5, 5)
+for iPt in range(0, len(ptMin)):
+    hMassPrompt.append(ROOT.TH1F("hMassPrompt_{}_{}".format(ptMin[iPt], ptMax[iPt]),"Dimuon mass ;m (GeV/c^2);#", 200, 2, 5))
+    hMassNonPrompt.append(ROOT.TH1F("hMassNonPrompt_{}_{}".format(ptMin[iPt], ptMax[iPt]),"Dimuon mass ;m (GeV/c^2);#", 200, 2, 5))
+    hTauzPrompt.append(ROOT.TH1F("hTauzPrompt_{}_{}".format(ptMin[iPt], ptMax[iPt]),"Dimuon pseudoproper decay length ;m (GeV/c^2);#", 100, -0.007, 0.007))
+    hTauzNonPrompt.append(ROOT.TH1F("hTauzNonPrompt_{}_{}".format(ptMin[iPt], ptMax[iPt]),"Dimuon pseudoproper decay length ;m (GeV/c^2);#", 100, -0.007, 0.007))
+
 # Iterate over the keys and print the object names
 
 for key in keys:
     obj_name = key.GetName()
-    myTree = myfile.Get(obj_name+'/O2rtdimuonall;1')
+    myTree = fInPrompt.Get(obj_name+'/O2rtdimuonall;1')
     branch_list = myTree.GetListOfBranches()
     fMass = 'fMass'
     fTauz = 'fTauz'
-    
-    #restrictions = ['fEta', 'fEta1', 'fEta2', 'fChi2MatchMCHMID1', 'fChi2MatchMCHMID2']
     
     for e in myTree:
         fSign = getattr(e, 'fSign')
@@ -38,30 +54,34 @@ for key in keys:
         fChi2pca = getattr(e, 'fChi2pca')
         fPt = getattr(e, 'fPt')
         fTauzTemp = getattr(e, 'fTauz')
+        fMcDecision = getattr(e, 'fMcDecision')
 
-        
+        if fMcDecision == 0: continue
         if fSign != 0: continue
         if (abs(fEta) < 2.5 or abs(fEta) > 4.0): continue
         if (abs(fEta1) < 2.5 or abs(fEta1) > 4.0): continue
         if (abs(fEta2) < 2.5 or abs(fEta2) > 4.0): continue 
         if (fChi2MatchMCHMFT1 > 45 or fChi2MatchMCHMFT2 > 45): continue
-        if fChi2pca < 0: continue
-        if fPt < 6 or fPt > 10: continue
         if abs(fTauzTemp) > 0.007: continue
             
         valm = getattr(e, fMass)
         valt = getattr(e, fTauz)
 
         if valm < 2 or valm > 5: continue
-        
-        hist_arr_mass.append(valm)
-        hist_arr_tauz.append(valt)
-        
-#print(len(hist_arr))
+
+        hMassPromptInt.Fill(valm)
+        hTauzPromptInt.Fill(valt)
+        hPtPromptInt.Fill(fPt)
+        hEtaPromptInt.Fill(fEta)
+
+        for iPt in range(0, len(ptMin)):
+            if fPt > ptMin[iPt] and fPt < ptMax[iPt]:
+                hMassPrompt[iPt].Fill(valm)
+                hTauzPrompt[iPt].Fill(valt)
 
 for key in keys_non:
     obj_name = key.GetName()
-    myTree = myfile_non.Get(obj_name+'/O2rtdimuonall;1')
+    myTree = fInNonPrompt.Get(obj_name+'/O2rtdimuonall;1')
     branch_list = myTree.GetListOfBranches()
     fMass = 'fMass'
     fTauz = 'fTauz'
@@ -76,15 +96,14 @@ for key in keys_non:
         fChi2pca = getattr(e, 'fChi2pca')
         fPt = getattr(e, 'fPt')
         fTauzTemp = getattr(e, 'fTauz')
+        fMcDecision = getattr(e, 'fMcDecision')
 
-
+        if fMcDecision == 0: continue
         if fSign != 0: continue
         if (abs(fEta) < 2.5 or abs(fEta) > 4.0): continue
         if (abs(fEta1) < 2.5 or abs(fEta1) > 4.0): continue
         if (abs(fEta2) < 2.5 or abs(fEta2) > 4.0): continue 
         if (fChi2MatchMCHMFT1 > 45 or fChi2MatchMCHMFT2 > 45): continue
-        #if fChi2pca < 0: continue
-        if fPt < 6 or fPt > 10: continue
         if abs(fTauzTemp) > 0.007: continue
         
         valm = getattr(e, fMass)
@@ -92,113 +111,29 @@ for key in keys_non:
 
         if valm < 2 or valm > 5: continue
 
-        hist_arr_non_mass.append(valm)
-        hist_arr_non_tauz.append(valt)
+        hMassNonPromptInt.Fill(valm)
+        hTauzNonPromptInt.Fill(valt)
+        hPtNonPromptInt.Fill(fPt)
+        hEtaNonPromptInt.Fill(fEta)
 
-print(len(hist_arr_mass))
-print(len(hist_arr_non_mass))
-
-print(len(hist_arr_tauz))
-print(len(hist_arr_non_tauz))
-hist_arr_combined_mass = hist_arr_mass + hist_arr_non_mass
-hist_arr_combined_tauz = hist_arr_tauz + hist_arr_non_tauz
-#print(len(hist_arr_combined))
-
-# left = min(hist_arr)
-# right = max(hist_arr)
-
-hm = ROOT.TH1F("hm","Dimuon mass ;m (GeV/c^2);#", 200, 2, 5)
-hm.SetMarkerStyle(ROOT.kFullCross)
-hm.SetMarkerColor(ROOT.kRed)
-hm.SetMarkerSize(0.6)
-
-hmnon = ROOT.TH1F("hmnon", str(fMass)+";m (GeV/c^2);#", 200, 2, 5)
-hmnon.SetMarkerStyle(ROOT.kFullCross)
-hmnon.SetMarkerColor(ROOT.kBlue)
-hmnon.SetMarkerSize(0.6)
-
-hm_comb = ROOT.TH1F("hmnon", str(fMass)+";m (GeV/c^2);#", 200, 2, 5)
-hm_comb.SetMarkerStyle(ROOT.kFullCross)
-hm_comb.SetMarkerColor(ROOT.kBlue)
-hm_comb.SetMarkerSize(0.6)
-
-ht = ROOT.TH1F("ht","Dimuon pseudoproper decay length ;m (GeV/c^2);#", 100, -0.007, 0.007)
-ht.SetMarkerStyle(ROOT.kFullCross)
-ht.SetMarkerColor(ROOT.kRed)
-ht.SetMarkerSize(0.6)
-
-htnon = ROOT.TH1F("htnon", str(fTauz)+";m (GeV/c^2);#", 100, -0.007, 0.007)
-htnon.SetMarkerStyle(ROOT.kFullCross)
-htnon.SetMarkerColor(ROOT.kBlue)
-htnon.SetMarkerSize(0.6)
-
-ht_comb = ROOT.TH1F("htnon", str(fTauz)+";m (GeV/c^2);#", 100, -0.007, 0.007)
-ht_comb.SetMarkerStyle(ROOT.kFullCross)
-ht_comb.SetMarkerColor(ROOT.kBlue)
-ht_comb.SetMarkerSize(0.6)
+        for iPt in range(0, len(ptMin)):
+            if fPt > ptMin[iPt] and fPt < ptMax[iPt]:
+                hMassNonPrompt[iPt].Fill(valm)
+                hTauzNonPrompt[iPt].Fill(valt)
 
 
-#print(hist_arr)
-
-for i in hist_arr_mass: hm.Fill(i)
-for i in hist_arr_non_mass: hmnon.Fill(i)
-for i in hist_arr_combined_mass: hm_comb.Fill(i)
-    
-for i in hist_arr_tauz: ht.Fill(i)
-for i in hist_arr_non_tauz: htnon.Fill(i)
-for i in hist_arr_combined_tauz: ht_comb.Fill(i)    
-
-# #fitFcn = ROOT.TF1('fitFcn', ROOT.fitFunction, 0, 3, 5)
-#fit_func = ROOT.TF("fit_func", "gaus")
-# fit_func2 = ROOT.TF1("fit_func2", "gaus")
-#fit_func.SetLineColor(ROOT.kRed)
-# fit_func2.SetLineColor(ROOT.kOrange)
-
-# %jsroot on
-c = ROOT.TCanvas()
-c.Divide(2, 1)
-
-c.cd(1)
-hmnon.Draw('P')
-hm.Draw("P SAME")
-
-c.cd(2)
-htnon.Draw('P')
-ht.Draw("P SAME")
-
-c.Draw()
-c.SaveAs("imgs/output_hists_tune_45_6-10.png")
-#print(hm)
-
-# fl1 = ROOT.TFile("hm_tune_45_6-10.root", "RECREATE")
-# hm.Write()
-# fl1.Close()
-
-# # file = ROOT.TFile("hm.root")
-# # hm_deserialized = file.Get("hm")
-
-# fl2 = ROOT.TFile("hmnon_tune_45_6-10.root", "RECREATE")
-# hmnon.Write()
-# fl2.Close()
-
-
-# fl3 = ROOT.TFile("ht_tune_45_6-10.root", "RECREATE")
-# ht.Write()
-# fl2.Close()
-
-# fl4 = ROOT.TFile("htnon_tune_45_6-10.root", "RECREATE")
-# htnon.Write()
-# fl2.Close()
-
-
-fl = ROOT.TFile("root_files/template_tune_45_6-10.root", "RECREATE")
-hm.Write()
-hmnon.Write()
-ht.Write()
-htnon.Write()
-fl.Close()
-
-print("---------------------------------")
-# file = ROOT.TFile("hm.root")
-# hm_de = file.Get("hm")
-# print(hm_de)
+fOut = ROOT.TFile("template.root", "RECREATE")
+hMassPromptInt.Write()
+hTauzPromptInt.Write()
+hPtPromptInt.Write()
+hEtaPromptInt.Write()
+hMassNonPromptInt.Write()
+hTauzNonPromptInt.Write()
+hPtNonPromptInt.Write()
+hEtaNonPromptInt.Write()
+for iPt in range(0, len(ptMin)):
+    hMassPrompt[iPt].Write()
+    hTauzPrompt[iPt].Write()
+    hMassNonPrompt[iPt].Write()
+    hTauzNonPrompt[iPt].Write()
+fOut.Close()

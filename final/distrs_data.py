@@ -9,8 +9,9 @@ import numpy
 
 start_time = time.time()
 
-myfile = TFile('/Users/lucamicheletti/cernbox/summer_student_quarkonia_run3/data/LHC22o/AO2D.root')
+#myfile = TFile('/Users/lucamicheletti/cernbox/summer_student_quarkonia_run3/data/LHC22o/AO2D.root')
 #myfile = TFile('/home/lucas/Documents/CERN/alice_project/alice/root/data_new.root')
+myfile = TFile('/media/lucas/ADATA SE760/CERN/AO2D_cut.root')
 treeList = []
 
 # Get the list of keys in the file
@@ -82,6 +83,10 @@ ht_sig.SetMarkerStyle(ROOT.kFullCross)
 ht_sig.SetMarkerColor(ROOT.kRed)
 ht_sig.SetMarkerSize(0.6)
 
+hm_no_peak = ROOT.TH1F("hm_no_peak","Dimuon mass ;m (GeV/c^2);#", 200, 2, 5)
+hm_no_peak.SetMarkerStyle(ROOT.kFullCross)
+hm_no_peak.SetMarkerColor(ROOT.kBlue)
+hm_no_peak.SetMarkerSize(0.6)
 
 tauz = ROOT.RooRealVar("Dimuon tauz", "Dimuon pseudoproper decay length", -0.007, 0.007)
 
@@ -110,7 +115,7 @@ conds = (
     "abs(fEta2) < 2.5 || abs(fEta2) > 4.0 || "
     "(fChi2MatchMCHMFT1 > 45 || fChi2MatchMCHMFT2 > 45) ||"
     #"fChi2pca < 0")
-    "fPt < 6 || fPt > 10 ||"
+    "fPt < 4 || fPt > 6 ||"
     "abs(fTauz) > 0.007 )")
 
 for key in keys:
@@ -187,6 +192,9 @@ for valm, valt, valsign in zip(accumulated_data['fMass'],accumulated_data['fTauz
     hm.Fill(valm)
     ht.Fill(valt)
 
+    if valm < 2.7 or valm > 3.4:
+        hm_no_peak.Fill(valm)
+
     if (valm > 2.1 and valm < 2.5) or (valm > 4.1 and valm < 4.5):
     # if (valm > 1.5 and valm < 2):
         hm_cut.Fill(valm)
@@ -251,7 +259,7 @@ ht.Draw("P")
 ht_cut.Draw("P SAME")
 
 c1.Draw()
-c1.SaveAs("imgs/output_hists_data_new_tune_45_6-10_sign_plus.png")
+c1.SaveAs("output_hists_data_new_tune_45_4-6_bkg_extr.png")
 
 
 
@@ -267,7 +275,7 @@ c2.Draw()
 
 
 
-c2.SaveAs("imgs/output_hists_data_new_tune_45_6-10_bkg_comp.png")
+c2.SaveAs("output_hists_data_new_tune_45_4-6_bkg_comp.png")
 
 print(hm)
 
@@ -291,7 +299,7 @@ print(hm)
 # hm_bg.Write()
 # fl5.Close()
 
-fl = ROOT.TFile("root_files/data_tune_45_6-10_bkg_extr.root", "RECREATE")
+fl = ROOT.TFile("data_tune_45_4-6_bkg_extr.root", "RECREATE")
 hm.Write()
 ht.Write()
 
@@ -308,6 +316,8 @@ hm_bkg.Write()
 
 ht_sig.Write()
 ht_bkg.Write()
+
+hm_no_peak.Write()
 
 fl.Close()
 
