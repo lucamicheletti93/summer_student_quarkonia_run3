@@ -7,11 +7,11 @@ treeList = []
 
 # Get the list of keys in the file
 
-keys = fInPrompt.GetListOfKeys()
-keys.pop()
+keysPrompt = fInPrompt.GetListOfKeys()
+keysPrompt.pop()
 
-keys_non = fInNonPrompt.GetListOfKeys()
-keys_non.pop()
+keysNonPrompt = fInNonPrompt.GetListOfKeys()
+keysNonPrompt.pop()
 
 ptMin = [0, 2, 4, 6]
 ptMax = [2, 4, 6, 10]
@@ -37,7 +37,7 @@ for iPt in range(0, len(ptMin)):
 
 # Iterate over the keys and print the object names
 
-for key in keys:
+for key in keysPrompt:
     obj_name = key.GetName()
     myTree = fInPrompt.Get(obj_name+'/O2rtdimuonall;1')
     branch_list = myTree.GetListOfBranches()
@@ -79,7 +79,7 @@ for key in keys:
                 hMassPrompt[iPt].Fill(valm)
                 hTauzPrompt[iPt].Fill(valt)
 
-for key in keys_non:
+for key in keysNonPrompt:
     obj_name = key.GetName()
     myTree = fInNonPrompt.Get(obj_name+'/O2rtdimuonall;1')
     branch_list = myTree.GetListOfBranches()
