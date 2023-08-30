@@ -1,0 +1,13 @@
+---
+inputs:
+  data: [tree_Jpsi_data.root]
+
+ptmins: [0., 2., 4., 6.]
+ptmaxs: [2., 4., 6., 10.]
+
+models: [
+  ModelHandler_D0toKpi_pt0.0_2.0.pickle,
+  ModelHandler_D0toKpi_pt2.0_4.0.pickle,
+  ModelHandler_D0toKpi_pt4.0_6.0.pickle,
+  ModelHandler_D0toKpi_pt6.0_10.0.pickle
+]
