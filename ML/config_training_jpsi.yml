@@ -46,7 +46,7 @@ ml:
 output:
   directory: "."
   out_labels: # output labels, keep the right number of classes
-    suffix: D0toKpi
+    suffix: JpsiToMuMu
     bkg: bkg
     prompt: prompt
     nonprompt: nonprompt
