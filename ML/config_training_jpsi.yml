@@ -1,0 +1,52 @@
+---
+data_prep:
+  inputs:
+    prompt: [tree_Jpsi_prompt.root]
+    nonprompt: [tree_Jpsi_nonprompt.root]
+    bkg: [tree_Jpsi_data.root]
+    tree_name: treeJpsi
+  ptmins: [0., 2., 4., 6.]
+  ptmaxs: [2., 4., 6., 10.]
+  bkg_sidebands:
+    mass_left: [2.0, 2.5]
+    mass_right: [3.9, 4.5]
+  class_balance:
+    share: all_signal # options: equal, all_signal
+    bkg_factor: [1, 1, 1, 1] # factor to be applied to bkg compared to signal sample
+  test_fraction: 0.3
+  seed_split: 42
+
+ml:
+  dotraining: true
+  raw_output: false
+  roc_auc_approach: ovo
+  roc_auc_average: macro
+  training_vars: [fFwdDcaX1, fFwdDcaX2, fFwdDcaY1, fFwdDcaY2, fTauz, fTauxy]
+  hyper_pars: [ # one dictionary per pt bin
+    {"max_depth": 5, "learning_rate": 0.01, "n_estimators": 1000, "min_child_weight": 5, "n_jobs": 50, "tree_method": hist},
+    {"max_depth": 5, "learning_rate": 0.01, "n_estimators": 1000, "min_child_weight": 5, "n_jobs": 50, "tree_method": hist},
+    {"max_depth": 5, "learning_rate": 0.01, "n_estimators": 1000, "min_child_weight": 5, "n_jobs": 50, "tree_method": hist},
+    {"max_depth": 4, "learning_rate": 0.01, "n_estimators": 1000, "min_child_weight": 5, "n_jobs": 50, "tree_method": hist}
+  ]
+  hyper_pars_opt:
+    activate: false
+    ntrials: 25
+    njobs: 4
+    timeout: 1800
+    hyper_par_ranges:
+      {
+        "max_depth": !!python/tuple [3, 6],
+        "learning_rate": !!python/tuple [0.01, 0.1],
+        "n_estimators": !!python/tuple [300, 1500],
+        "min_child_weight": !!python/tuple [1, 10],
+        "subsample": !!python/tuple [0.8, 1.],
+        "colsample_bytree": !!python/tuple [0.8, 1.],
+      }
+
+output:
+  directory: "."
+  out_labels: # output labels, keep the right number of classes
+    suffix: D0toKpi
+    bkg: bkg
+    prompt: prompt
+    nonprompt: nonprompt
