@@ -156,41 +156,6 @@ for iPt in range(0, len(ptMin)):
         hTauzSig[iPt].SetBinError(iBin, np.sqrt(OS - GM))
 
 
-# print("Number of envents: ",counter)
-
-# c1 = ROOT.TCanvas("c", "Fit Canvas", 1600, 900)
-# c1.Divide(2, 2)
-
-# c1.cd(1)
-# hMass.Draw("P")
-# hMassBkg.Draw("P SAME")
-# hMassSig.Draw("P SAME")
-
-# c1.cd(2).SetLogy()
-# hTauz.Draw("P")
-# hTauzBkg.Draw("P SAME")
-# hTauzSig.Draw("P SAME")
-
-# c1.cd(3)
-# hMass.Draw("P")
-# hMassSideBand.Draw("P SAME")
-
-# c1.cd(4).SetLogy()
-# hTauz.Draw("P")
-# hTauSideBand.Draw("P SAME")
-
-# c1.Draw()
-# c1.SaveAs("output_hists_data_new_tune_45_4-6Bkg_extr.png")
-
-# c2 = ROOT.TCanvas("c", "Fit Canvas", 1600, 900)
-
-# hTauzBkg.Draw("P")
-# hTauSideBand.Draw("P SAME")
-
-# c2.SetLogy()
-# c2.Draw()
-
-# c2.SaveAs("output_hists_data_new_tune_45_4-6Bkg_comp.png")
 
     fl = ROOT.TFile("data.root", "RECREATE")
     hMass[iPt].Write()

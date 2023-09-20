@@ -4,7 +4,6 @@ from ROOT import *
 PATH = "/afs/cern.ch/user/l/lvicenik/alice/"
 PATH_DATA = "/afs/cern.ch/user/l/lvicenik/private/summer_student_quarkonia_run3/root_files/"
 PATH_IMGS = "/afs/cern.ch/user/l/lvicenik/private/summer_student_quarkonia_run3/imgs/"
-PATH_PLOTS = "/afs/cern.ch/user/l/lvicenik/private/summer_student_quarkonia_run3/plots/"
 PATH_TXT = "/afs/cern.ch/user/l/lvicenik/private/summer_student_quarkonia_run3/text_files/"
 PATH_WORKSPACE = "/afs/cern.ch/user/l/lvicenik/private/summer_student_quarkonia_run3/workspaces/"
 
@@ -27,24 +26,23 @@ def LoadStyle():
     ROOT.gStyle.SetOptStat(0)
     ROOT.gStyle.SetHatchesSpacing(0.3)
 
-
 for iPt in range(0, len(ptMin)):
 
-    templateFile = ROOT.TFile(PATH_DATA + "template.root")
-    hMassPromptDistr = templateFile.Get(f"hMassPrompt_{ptMin[iPt]}_{ptMax[iPt]}")
+    templateFile = ROOT.TFile(PATH_DATA + "mcSmear.root")
+    hMassPromptDistr = templateFile.Get(f"hMassPromptSmeared_{ptMin[iPt]}_{ptMax[iPt]}")
     hMassPromptDistr.Scale(1. / hMassPromptDistr.Integral())
-    hMassNonPromptDistr = templateFile.Get(f"hMassNonPrompt_{ptMin[iPt]}_{ptMax[iPt]}")
+    hMassNonPromptDistr = templateFile.Get(f"hMassNonPromptSmeared_{ptMin[iPt]}_{ptMax[iPt]}")
     hMassNonPromptDistr.Scale(1. / hMassNonPromptDistr.Integral())
-    hTauzPromptDistr = templateFile.Get(f"hTauzPrompt_{ptMin[iPt]}_{ptMax[iPt]}")
+    hTauzPromptDistr = templateFile.Get(f"hTauzPromptSmeared_{ptMin[iPt]}_{ptMax[iPt]}")
     hTauzPromptDistr.Scale(1. / hTauzPromptDistr.Integral())
-    hTauzNonPromptDistr = templateFile.Get(f"hTauzNonPrompt_{ptMin[iPt]}_{ptMax[iPt]}")
+    hTauzNonPromptDistr = templateFile.Get(f"hTauzNonPromptSmeared_{ptMin[iPt]}_{ptMax[iPt]}")
     hTauzNonPromptDistr.Scale(1. / hTauzNonPromptDistr.Integral())
 
 
 
     dataFile = ROOT.TFile(PATH_DATA + "data.root")
 
-    hTauzBkgDistr =  dataFile.Get(f"hTauzSideBand_{ptMin[iPt]}_{ptMax[iPt]}")
+    hTauzBkgDistr =  dataFile.Get(f"hTauzBkg_{ptMin[iPt]}_{ptMax[iPt]}")
     hTauzBkgDistr.Scale(1. / hTauzBkgDistr.Integral())
 
     hMassData = dataFile.Get(f"hMass_{ptMin[iPt]}_{ptMax[iPt]}")
@@ -141,9 +139,8 @@ for iPt in range(0, len(ptMin)):
     letexTitle.SetNDC()
     letexTitle.SetTextFont(42)
 
-
     frame1 = mass.frame(ROOT.RooFit.Title(" "))
-    combData.plotOn(frame1, ROOT.RooFit.Name("massData") ,ROOT.RooFit.Cut("cat==cat::massCat"))
+    combData.plotOn(frame1, ROOT.RooFit.Cut("cat==cat::massCat"))
     simfit.plotOn(frame1, ROOT.RooFit.Name("massAllPdf"), Slice=(cat, "massCat"), ProjWData=(cat,combData))
 
 
@@ -158,17 +155,16 @@ for iPt in range(0, len(ptMin)):
     canvas = ROOT.TCanvas("canvas", "Fit Plot", 3000, 1000)
 
     legend1 = ROOT.TLegend(0.53, 0.65, 0.95, 0.75)
-    legend1.AddEntry(frame1.findObject("massData"), "OS Mass data", "l")
+    legend1.AddEntry(frame1.findObject("massData"), "OS mass data", "l")
     legend1.AddEntry(frame1.findObject("massAllPdf"), "Mass fit CB + Cheby", "l")
     legend1.SetBorderSize(0)
     legend1.SetFillStyle(0)
 
-
-    legend2 = ROOT.TLegend(0.15, 0.40, 0.50, 0.72)
+    legend2 = ROOT.TLegend(0.15, 0.50, 0.50, 0.82)
     legend2.AddEntry(frame2.findObject("tauzAllPdf"), "OS Tauz fit", "l")
     legend2.AddEntry(frame2.findObject("tauzPromptPdf"), "Prompt fraction", "l")
     legend2.AddEntry(frame2.findObject("tauzNonPromptPdf"), "Non prompt fraction", "l")
-    legend2.AddEntry(frame2.findObject("tauzBkgPdf"), "OS Background", "l")
+    legend2.AddEntry(frame2.findObject("tauzBkgPdf"), "LS Background", "l")
     legend2.SetBorderSize(0)
     legend2.SetFillStyle(0)
 
@@ -182,5 +178,7 @@ for iPt in range(0, len(ptMin)):
     legend2.Draw()
 
     canvas.Update()
-    canvas.SaveAs(PATH_IMGS + f"simul_fit_hist_{ptMin[iPt]}_{ptMax[iPt]}.png")
-    canvas.SaveAs(PATH_PLOTS + f"simul_fit_hist_{ptMin[iPt]}_{ptMax[iPt]}.pdf")
+    canvas.SaveAs(PATH_IMGS + f"simul_fit_hist_smeared_{ptMin[iPt]}_{ptMax[iPt]}.png")
+
+with open(file_path, "a") as file:
+     file.write("\n")
